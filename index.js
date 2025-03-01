@@ -17,15 +17,19 @@ const storage = multer.diskStorage({
     }
 })
 
-const upload = multer({ storage : storage})
+const upload = multer({ storage : storage , fileFilter : function (req, file , cb){
+    if(file.mimetype == "image/jpeg" || file.mimetype == "image/png"){ 
+        cb(null, true);
+    }
+}})
 app.use(express.static("uploads"));
 
 
 
-app.post("/", upload.single("image"), function (req, res) {
-    console.log(req.file.filename);
-    WriteFile(req.file.filename, function () {
-        res.send(`file Uploaded ${req.file.filename}`);
+app.post("/", upload.array("image" , 5), function (req, res) {
+    console.log(req.files[0].filename);
+    WriteFile(req.files[0].filename, function () {
+        res.send(`file Uploaded`);
     }) 
 
 })
