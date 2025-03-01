@@ -4,12 +4,26 @@ app.use(express.static("public"));
 const multer = require("multer");
 const fs = require("fs");
 const ejs = require("ejs");
-const upload = multer({ dest: 'uploads/' })
 
+
+
+const storage = multer.diskStorage({
+    destination:function(req,file,cb)
+    {
+        cb(null , "uploads/")
+    },
+    filename : function(req,file,cb){
+        cb(null,file.originalname);
+    }
+})
+
+const upload = multer({ storage : storage})
 app.use(express.static("uploads"));
+
+
+
 app.post("/", upload.single("image"), function (req, res) {
     console.log(req.file.filename);
-    
     WriteFile(req.file.filename, function () {
         res.send(`file Uploaded ${req.file.filename}`);
     }) 
